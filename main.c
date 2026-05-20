@@ -5,5 +5,5 @@
 
 int main() {
 	Result(int, Err) x = Ok(1);
-	printf("%d", x.unwrap);
+	printf("%d", unwrap(x));
 }

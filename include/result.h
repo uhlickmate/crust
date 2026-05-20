@@ -8,6 +8,7 @@
 #define Result(T, E) struct { \
 	union { T ok; E err; } value; \
 	bool is_ok; \
+	T (*unwrap)(void* self); \
 } \
 
 #define unwrap ({ \
@@ -17,7 +18,6 @@
     } \
     res.value.ok; \
 })
-
 
 #define Ok(val) { .value.ok = (val), .is_ok = true }
 #define Err(err) { .value.err = (err), .is_ok = false }
