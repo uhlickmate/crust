@@ -14,7 +14,7 @@
     __typeof__(opt) _opt = (opt); \
     if (!_opt.is_some) { \
         fprintf(stderr, "PANIC: Attempted unwrap on `None` option\n"); \
-        exit(1); \
+        abort(); \
     } \
     _opt.value; \
 })
@@ -23,7 +23,7 @@
     __typeof__(opt) _opt = (opt); \
     if (!_opt.is_some) { \
         fprintf(stderr, "PANIC: %s\n", msg); \
-        exit(1); \
+        abort(); \
     } \
     _opt.value; \
 })

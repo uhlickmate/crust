@@ -10,20 +10,32 @@
 	bool is_ok; \
 }
 
+/**
+ * @brief Unwraps Result.
+ * @details If wrapped value is Ok, returns value, else panics.
+ * 
+ * @param res Result to unwrap
+ */
 #define unwrap_res(res) ({ \
     __typeof__(res) _res = (res); \
     if (!_res.is_ok) { \
         fprintf(stderr, "PANIC: Attempted unwrap on `Err` result\n"); \
-        exit(1); \
+        abort(); \
     } \
     _res.value.ok; \
 })
 
+/**
+ * @brief Unwraps Result with a message if fails.
+ * @details If wrapped value is Ok, returns value, else panics.
+ * 
+ * @param res Result to unwrap
+ */
 #define expect_res(res, msg) ({ \
     __typeof__(res) _res = (res); \
     if (!_res.is_ok) { \
         fprintf(stderr, "PANIC: %s\n", (msg)); \
-        exit(1); \
+        abort(); \
     } \
     _res.value.ok; \
 })
