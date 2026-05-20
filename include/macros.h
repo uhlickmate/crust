@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #include <string.h>
 
+// Common / shared macros
+
 #define _fmt_sqc(x) _Generic((x), \
     bool: "%s ", \
     char: "%c ", \
@@ -23,23 +25,32 @@
     default: (x) \
 )
 
+/**
+ * @brief Compare values of `a` & `b` with custom 
+ * handling for some data types like strings.
+ */
+#define _cmp(a, b) _Generic((a), \
+    const char*: strcmp((char*)(a), (char*)(b)) == 0, \
+    char*: strcmp((char*)(a), (char*)(b)) == 0, \
+    default: (a) == (b) \
+)
 
 
 
-// ###########
+
 // Output
-// ###########
 
-#define _print_single(x) printf(_fmt_sqc(x), _fmt_other(x))
+#define _print_single_fd(fd, x) fprintf(fd, _fmt_sqc(x), _fmt_other(x)) // Print any primitive type with inferred format sequence
 
 #define _GET_MACRO(_1, _2, _3, _4, _5, NAME, ...) NAME // Counts arguments
 
+// Functions for printing set amount of arguments
 // Scale if needed
-#define _print_1(a)          _print_single(a)
-#define _print_2(a, b)       _print_single(a); _print_single(b)
-#define _print_3(a, b, c)    _print_single(a); _print_single(b); _print_single(c)
-#define _print_4(a, b, c, d) _print_single(a); _print_single(b); _print_single(c); _print_single(d)
-#define _print_5(a, b, c, d, e) _print_single(a); _print_single(b); _print_single(c); _print_single(d); _print_single(e)
+#define _print_1(a)          _print_single_fd(stdou, a)
+#define _print_2(a, b)       _print_single_fd(stdou, a); _print_single_fd(stdou, b)
+#define _print_3(a, b, c)    _print_single_fd(stdou, a); _print_single_fd(stdou, b); _print_single_fd(stdou, c)
+#define _print_4(a, b, c, d) _print_single_fd(stdou, a); _print_single_fd(stdou, b); _print_single_fd(stdou, c); _print_single_fd(stdou, d)
+#define _print_5(a, b, c, d, e) _print_single_fd(stdou, a); _print_single_fd(stdou, b); _print_single_fd(stdou, c); _print_single_fd(stdou, d); _print_single_fd(stdou, e)
 
 
 // Access functions
@@ -57,22 +68,38 @@
 
 
 
-// ###########
-// Comparison
-// ###########
-
-#define _cmp(a, b) _Generic((a) \
-    char*: strcmp((a), (b)) == 0, \
-    default: (a) == (b) \
-)
-
+// Testing / comparison
 
 // Access functions
+
+/**
+ * @brief Asserts expression boolean value, panics & aborts on inequality.
+ * 
+ * @note Not called `assert` as conflicts C lib
+ */
+#define assert_true(exp) do { \
+    if (!(exp)) { \
+        fprintf(stderr, "assertion failed: %s", #exp); \
+        fprintf(stderr, "\n  at %s:%d\n", __FILE__, __LINE__); \
+        abort(); \
+    } \
+} while (0)
+
+/**
+ * @brief Asserts equality of `a` & `b`, panics & aborts on failure.
+ */
 #define assert_eq(a, b) do { \
-	if (!_cmp(a, b)) {
-		
-	}
-}
+    if (!_cmp(a, b)) { \
+        fprintf(stderr, "assertion failed: `assert_eq(%s, %s)`\n", #a, #b); \
+        fprintf(stderr, "  left:  "); \
+        _print_single_fd(stderr, a); \
+        fprintf(stderr, "\n  right: "); \
+        _print_single_fd(stderr, b); \
+        fprintf(stderr, "\n  at %s:%d\n", __FILE__, __LINE__); \
+        abort(); \
+    } \
+} while (0)
+
 
 
 
