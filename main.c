@@ -9,7 +9,5 @@ int main() {
 	Option(int) opt_some = Some(15);
 	Option(bool) opt_none = None;
 
-	println("res_ok has a value of ", unwrap_res(res_ok));
-	println("opt_some has a value of ", expect_opt(opt_none, "Msg"));
-
+	assert_eq(1, 2);
 }
