@@ -5,9 +5,10 @@
 
 #include "result.h"
 #include "option.h"
+#include "vector.h"
+#include "string.h"
 
 #include "macros.h"
-
 
 
 
