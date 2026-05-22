@@ -5,45 +5,43 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define Result(T, E) struct { \
-	union { T ok; E err_t; } value; \
-	bool is_ok; \
-}
+#define Result(T, E) Result_##T##_##E
 
-/**
- * @brief Unwraps Result.
- * @details If wrapped value is Ok, returns value, else panics.
- * 
- * @param res Result to unwrap
- */
+#define DECLARE_RESULT(T, E) \
+    typedef struct { \
+        union { \
+            T ok; \
+            E err_t; \
+        } value; \
+        bool is_ok; \
+    } Result(T, E)
+
+#define Ok(val)  { .value.ok = (val), .is_ok = true }
+#define Err(err) { .value.err_t = (err), .is_ok = false }
+
+#define OkExplicit(T, E, val)  ((Result(T, E)) { .value.ok = (val), .is_ok = true })
+#define ErrExplicit(T, E, err) ((Result(T, E)) { .value.err_t = (err), .is_ok = false })
+
 #define unwrap_res(res) ({ \
     __typeof__(res) _res = (res); \
-    if (!_res.is_ok) { \
-        fprintf(stderr, "PANIC: Attempted unwrap on `Err` result\n"); \
-        abort(); \
-    } \
+    if (!_res.is_ok) { panic("Attempted unwrap on `Err` result"); } \
     _res.value.ok; \
 })
 
-/**
- * @brief Unwraps Result with a message if fails.
- * @details If wrapped value is Ok, returns value, else panics.
- * 
- * @param res Result to unwrap
- */
 #define expect_res(res, msg) ({ \
     __typeof__(res) _res = (res); \
-    if (!_res.is_ok) { \
-        fprintf(stderr, "PANIC: %s\n", (msg)); \
-        abort(); \
-    } \
+    if (!_res.is_ok) { panic(msg)); } \
     _res.value.ok; \
 })
 
-#define is_valid(res) ({ (res).is_ok; })
+#define is_ok(res)  ({ (res).is_ok; })
 #define is_err(res) ({ !(res).is_ok; })
 
-#define Ok(val) { .value.ok = (val), .is_ok = true }
-#define Err(err) { .value.err_t = (err), .is_ok = false }
+DECLARE_RESULT(int, Error);
+DECLARE_RESULT(bool, Error);
+DECLARE_RESULT(float, Error);
+DECLARE_RESULT(char, Error);
+DECLARE_RESULT(double, Error);
+DECLARE_RESULT(size_t, Error);
 
 #endif
