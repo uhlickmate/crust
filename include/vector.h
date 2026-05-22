@@ -8,11 +8,12 @@
 #include "macros.h"
 
 // For impl functions, only use 'static inline' if method has no or static type return value
+// TODO - call static inline funcs immediatelly
 
 #define Vec(T) Vec_##T
 
 #define DECLARE_VEC(T) \
-	typedef struct { \	
+	typedef struct { \
 		T *buf_ptr; \
 		size_t len; \
 		size_t capacity; \
@@ -90,21 +91,18 @@ static inline void _vec_shrink_to_fit_impl(void **buf_ptr, size_t *len, size_t *
 #define Vec_shrink_to_fit(T, vec) _vec_shrink_to_fit_impl((void*)&vec.buf_ptr, &vec.len, &vec.capacity, sizeof(T))
 
 #define Vec_get(T, vec, idx) ({ \
-    Option(T) _res; \
+    Option(T) _opt; \
     size_t _idx = (size_t)(idx); \
     if (_idx >= (vec).len) { \
-        _res = NoneExplicit(T); \
+        _opt = NoneExplicit(T); \
     } \
     else { \
-        _res = SomeExplicit(T, (vec).buf_ptr[_idx]); \
+        _opt = SomeExplicit(T, (vec).buf_ptr[_idx]); \
     } \
-    _res; \
+    _opt; \
 })
 
-// vec = [0, 1, 2, 3, 4, 5, 6]
-// len = 7
-// capacity = 8
-// idx = 2
+
 
 static inline void _vec_insert_impl(void **buf_ptr, size_t *len, size_t *capacity, void* el, size_t el_size, size_t idx) {
 	if (idx > *len - 1) { panic("Attempted to insert out of bounds at `_vec_insert_impl` (called by Vec_insert)"); }
@@ -125,6 +123,27 @@ static inline void _vec_insert_impl(void **buf_ptr, size_t *len, size_t *capacit
 #define Vec_insert(T, vec, el, idx) ({ \
 	T _el = (el); \
 	_vec_insert_impl((void**)&vec.buf_ptr, &vec.len, &vec.capacity, &(_el), sizeof(T), idx); \
+})
+
+// vec = [0, 1, 2, 3, 4, 5, 6]
+// len = 7
+// capacity = 8
+// idx = 2
+
+// Check if vec not empty & if index is valid
+// Remove & save element
+// Move memory
+static inline void _vec_remove_impl(void *res, void **buf_ptr, size_t *len, size_t *capacity, size_t el_size, size_t idx) {
+	if (idx > *len - 1) { _opt = NoneExplicit(T) }
+	if (*len <= 0) { _opt = NoneExplicit(T) }
+
+	memcpy(opt, *buf_ptr + );
+}
+#define Vec_remove(T, vec, idx) ({ \
+	Option(T) _opt; \
+	int res; \
+	_vec_remove_impl(&res, (void*)&vec.buf_ptr, &vec.len, &vec.capacity, sizeof(T), idx); \
+	_opt; \
 })
 
 // Vec_display -> String
