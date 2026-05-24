@@ -133,16 +133,14 @@ static inline void _vec_insert_impl(void **buf_ptr, size_t *len, size_t *capacit
 // Check if vec not empty & if index is valid
 // Remove & save element
 // Move memory
-static inline void _vec_remove_impl(void *res, void **buf_ptr, size_t *len, size_t *capacity, size_t el_size, size_t idx) {
-	if (idx > *len - 1) { _opt = NoneExplicit(T) }
-	if (*len <= 0) { _opt = NoneExplicit(T) }
-
-	memcpy(opt, *buf_ptr + );
-}
 #define Vec_remove(T, vec, idx) ({ \
 	Option(T) _opt; \
-	int res; \
-	_vec_remove_impl(&res, (void*)&vec.buf_ptr, &vec.len, &vec.capacity, sizeof(T), idx); \
+	size_t _idx = (idx); \
+	if (_idx >= *len || *len == 0) { _opt = NoneExplicit(T); } \
+	else { \
+		_opt = SomeExplicit(T, (vec).buf_ptr[_idx]); \
+		memmove(); \
+	} \
 	_opt; \
 })
 
