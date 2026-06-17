@@ -30,12 +30,12 @@
 
 #define expect_res(res, msg) ({ \
     __typeof__(res) _res = (res); \
-    if (!_res.is_ok) { panic(msg)); } \
+    if (!_res.is_ok) { panic(msg); } \
     _res.value.ok; \
 })
 
-#define is_ok(res)  ({ (res).is_ok; })
-#define is_err(res) ({ !(res).is_ok; })
+#define is_ok(res) (res).is_ok;
+#define is_err(res) !(res).is_ok;
 
 DECLARE_RESULT(int, Error);
 DECLARE_RESULT(bool, Error);
